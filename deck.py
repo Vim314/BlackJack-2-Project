@@ -1,4 +1,5 @@
 from cgi import test
+from hashlib import new
 import random
 import numpy as np
 import sys
@@ -18,6 +19,7 @@ suits = ("Clubs", "Hearts", "Diamonds", "Spades")
 ranks = ("Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King")
 values = {"Ace":11, "Two":2, "Three":3, "Four":4, "Five":5, "Six":6, "Seven":7, "Eight":8, "Nine":9, "Ten":10, "Jack":10, "Queen":10, "King":10}
 
+
 #Creating outline for each card
 class Card:
     def __init__(self, suit, rank):
@@ -25,6 +27,7 @@ class Card:
         self.rank = rank
     def __str__(self):
         return self.rank + " of " + self.suit
+
 
 #Deck of Cards
 class Deck:
@@ -65,16 +68,20 @@ class Player:
         for card in self.hand:
             fullHand += "\n " + card.__str__()
             length += 1
-        print(length)
-        print(self.value)
+        print("Number of Cards: ", length)
+        print("Value of Hand: ", self.value)
         return "Your hand contains:" + fullHand
     
     def add_card(self, card):
         self.hand.append(card)
         self.value += values[card.rank]
-    
-    def show_hand(self):
-        print(self.hand)
+        if card.rank == "Ace":
+            self.aces += 1
+
+    def aceFix(self):
+        while self.value > 21 and self.aces:
+            self.value -= 10
+            self.aces -= 1
 
 newDeck = Deck()
 newDeck.shuffle()
@@ -83,5 +90,7 @@ newDeck.shuffle()
 player1 = Player()
 player1.add_card(newDeck.deal())
 player1.add_card(newDeck.deal())
-print(newDeck)
+player1.add_card(newDeck.deal())
+print(player1)
+player1.aceFix()
 print(player1)
