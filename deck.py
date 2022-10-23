@@ -1,7 +1,8 @@
+from cgi import test
 import random
 import numpy as np
-
-#This is Second Version [for github reasons]
+import sys
+#This is THIRD Version [for github reasons]
 
 #Testing update
 
@@ -9,25 +10,78 @@ import numpy as np
 
 #Last test
 
-#Creating Individual Card Class
+#Create deck of cards with numpy:
+#dealerDeck = np.array(np.meshgrid(["Ace", 2, 3, 4, 5, 6, 7, 8, 9, 10, "Jack", "Queen", "King"], ["Clubs", "Hearts", "Diamonds", "Spades"])).T.reshape(52,-1)
+
+#Defining suits, ranks, and value for each rank
+suits = ("Clubs", "Hearts", "Diamonds", "Spades")
+ranks = ("Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King")
+values = {"Ace":11, "Two":2, "Three":3, "Four":4, "Five":5, "Six":6, "Seven":7, "Eight":8, "Nine":9, "Ten":10, "Jack":10, "Queen":10, "King":10}
+
+#Creating outline for each card
 class Card:
-    def __init__(self, value, suit, fullDeck):
-        self.value = value
+    def __init__(self, suit, rank):
         self.suit = suit
-        self.fullDeck = fullDeck
+        self.rank = rank
+    def __str__(self):
+        return self.rank + " of " + self.suit
 
-        value = np.array(["ace", 2, 3, 4, 5, 6, 7, 8, 9, 10, "jack", "queen", "king"])
-        suit = np.array(["clubs", "hearts", "diamonds", "spades"])
+#Deck of Cards
+class Deck:
+    def __init__(self):
+        self.deck = []
+        for suit in suits:
+            for rank in ranks:
+                self.deck.append(Card(suit, rank))
 
-        fullDeck = np.array(np.meshgrid(value, suit)).T.reshape(52,-1)
+    def __str__(self):
+        fullDeck = ''
+        length = 0
+        for card in self.deck:
+            fullDeck += '\n ' + card.__str__()
+            length += 1
+        print(length)
+        return 'The deck has:' + fullDeck
 
     def shuffle(self):
-        np.random.shuffle(self.fullDeck)
+        random.shuffle(self.deck)
 
     def deal(self):
-        card = self.fullDeck.pop()
+        card = self.deck.pop(0)
+        print(card)
         return card
 
 
+#Player hand
+class Player:
+    def __init__(self):
+        self.hand = []
+        self.value = 0
+        self.aces = 0
     
+    def __str__(self):
+        fullHand = ""
+        length = 0
+        for card in self.hand:
+            fullHand += "\n " + card.__str__()
+            length += 1
+        print(length)
+        print(self.value)
+        return "Your hand contains:" + fullHand
     
+    def add_card(self, card):
+        self.hand.append(card)
+        self.value += values[card.rank]
+    
+    def show_hand(self):
+        print(self.hand)
+
+newDeck = Deck()
+newDeck.shuffle()
+
+
+player1 = Player()
+player1.add_card(newDeck.deal())
+player1.add_card(newDeck.deal())
+print(newDeck)
+print(player1)
