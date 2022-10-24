@@ -19,6 +19,8 @@ suits = ("Clubs", "Hearts", "Diamonds", "Spades")
 ranks = ("Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King")
 values = {"Ace":11, "Two":2, "Three":3, "Four":4, "Five":5, "Six":6, "Seven":7, "Eight":8, "Nine":9, "Ten":10, "Jack":10, "Queen":10, "King":10}
 
+playing = True
+busted = False
 
 #Creating outline for each card
 class Card:
@@ -51,7 +53,6 @@ class Deck:
 
     def deal(self):
         card = self.deck.pop(0)
-        print(card)
         return card
 
 
@@ -78,19 +79,137 @@ class Player:
         if card.rank == "Ace":
             self.aces += 1
 
-    def aceFix(self):
-        while self.value > 21 and self.aces:
+    def fixAce(self):
+        while self.value > 21 and self.aces>0:
             self.value -= 10
             self.aces -= 1
+    
+    def showDealerHand(self):
+        print(self.hand[1])
 
-newDeck = Deck()
-newDeck.shuffle()
+
+class Chips:
+    def __init__(self):
+        self.total = 100
+        self.bet = 0
+    
+    def win_bet(self):
+        self.total += self.bet
+    
+    def lose_bet(self):
+        self.total -= self.bet
 
 
-player1 = Player()
-player1.add_card(newDeck.deal())
-player1.add_card(newDeck.deal())
-player1.add_card(newDeck.deal())
-print(player1)
-player1.aceFix()
-print(player1)
+def player_hit(deck, hand):
+    hand.add_card(deck.deal())
+    hand.fixAce
+
+def player_busts(bustedPlayer):
+    print("You Busted!")
+
+def dealer_busts(dealer):
+    print("Dealer Busted!\nYou win!")
+
+def hit_or_stand(deck, player):
+    global playing
+    global busted
+    playing = True
+    
+    while True:
+        if(busted == True):
+            break
+        pInput = input("Hit or Stand? ")
+        pInput.lower()
+        if(pInput == "hit"):
+            player_hit(deck, player)
+
+        elif(pInput == "stand"):
+            print("Dealer will now play...")
+            playing = False
+
+        else:
+            print("Sorry")
+            continue
+        break
+
+def showSome(player, dealer):
+    print("\nDealer's Hand:")
+    print(" <Hidden Card> ")
+    print(" ", dealer.hand[1])
+    print("\nYour hand's value: ", player.value)
+    print("Player's Hand:", *player.hand, sep = "\n")
+
+def showAll(player, dealer):
+    print("\nDealer's Hand:", *dealer.hand, sep = "\n")
+    print("Dealer's Hand Value: ", dealer.value)
+    print("\nPlayer's Hand:", *player.hand, sep = "\n")
+    print("Player's Hand Value: ", player.value)
+
+def playerWin():
+    print("Congratulations, you win!")
+
+def playerLose():
+    print("You lose.")
+
+
+def blackjackGame():
+    #Create and shuffle the deck
+    newDeck = Deck()
+    newDeck.shuffle()
+
+    #Create the player and the dealer hand (empty)
+    player1 = Player()
+    dealer = Player()
+
+    #Deal 2 cards to each player
+    dealer.add_card(newDeck.deal())
+    dealer.add_card(newDeck.deal())
+    
+    player1.add_card(newDeck.deal())
+    player1.add_card(newDeck.deal())
+
+    #Show the player the cards before the game starts
+    showSome(player1, dealer)
+    
+    #Start the game
+    while playing:
+        
+        #Ask user whether they want to hit or stand
+        hit_or_stand(newDeck, player1)
+        
+        
+        #Show the player their cards and the single dealer card
+        showAll(player1, dealer)
+
+
+        #If user busts code
+        if(player1.value > 21):
+            player_busts(player1)
+
+        #If user did not bust, continue to dealer:
+        if(player1.value <= 21):
+
+            #If dealers cards are less than 17 AND less than the users cards, dealer must hit
+            if(dealer.value < 17 and dealer.value < player1.value):
+                player_hit(newDeck, dealer)
+
+                #Check if dealer busts
+                if(dealer.value>21):
+                    dealer_busts(dealer)
+
+        if(player1.value < 22 and player1.value > dealer.value):
+            playerWin()
+        
+        elif(player1.value < 22 and player1.value < dealer.value):
+            playerLose()
+
+
+    
+    
+
+
+
+
+if __name__ == "__main__":
+    blackjackGame()
+
